@@ -1,0 +1,10 @@
+
+.wrapper {
+    background: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    padding-left: 1rem;
+
+}
+
