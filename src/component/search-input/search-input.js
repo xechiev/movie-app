@@ -1,15 +1,13 @@
 import React from 'react';
 import { Input } from 'antd';
-import "./search-input.css"
+import './search-input.css';
 
 const SearchInput = () => {
-    return (
-        <Input 
-            placeholder="Type to search..."
-            className="search-input"
-            onChange={(e) => this.onLableChange(e)}
-        />
-    )
+  // const onLableChange = (e) => {
+  //     const
+  // }
+
+  return <Input placeholder="Type to search..." className="search-input" onChange={(e) => this.onLableChange(e)} />;
 };
 
 export default SearchInput;

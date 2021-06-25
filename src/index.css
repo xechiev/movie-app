@@ -4,11 +4,19 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  background: #E5E5E5;
+  background: #e5e5e5;
   width: 1010px;
   height: 1147px;
   margin: 0 auto;
-  overflow-wrap: break-word; 
+  overflow-wrap: break-word;
   word-wrap: normal;
-  word-break: normal
+  word-break: normal;
+}
+
+.search-input {
+  width: 945px;
+  height: 40px;
+  margin-bottom: 1rem;
+  margin-top: 4.5rem;
+  margin-left: 1rem;
 }
