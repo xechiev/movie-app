@@ -24,6 +24,8 @@
     "react"
   ],
   "rules": {
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
     "no-plusplus": 0,
     "react/state-in-constructor": [
       "off"
