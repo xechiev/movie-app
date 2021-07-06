@@ -13,6 +13,7 @@ export default function App() {
   const [errorNetwork, setErrorNetwork] = useState(false);
   const [totalMovie, setTotalMovie] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+
   const KEY_API = '20a8b7a1ea2275c8d7e4524fc410799a';
 
   const searchDebounce = useDebounce(query.trim(), 650);
@@ -20,12 +21,12 @@ export default function App() {
   useEffect(() => {
     if(searchDebounce) {
       setLoading(true);
-      searchMovie(searchDebounce).then(res => {
-        if(res.length) {
-          
+      searchMovie(searchDebounce).then(data => {
+        setTotalMovie(data.total_results)
+        if(data.results.length) {
           setLoading(false)
           setError(false)
-          setMovies(res)
+          setMovies(data.results)
         } else {
           onError()
           setMovies([])
@@ -35,6 +36,7 @@ export default function App() {
       setError(false)
       setQuery(query)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchDebounce]);
 
   const onError = () => {
@@ -49,19 +51,17 @@ export default function App() {
     setMovies([])
   }
 
-  const searchMovie = async (search, page = null) => {
-    const searchString = `https://api.themoviedb.org/3/search/movie?api_key=${KEY_API}&query=${search}`;
+  const searchMovie = async (search, page = 1) => {
+    const searchString = `https://api.themoviedb.org/3/search/movie?api_key=${KEY_API}&query=${search}&page=${page}`;
     return await fetch(searchString)
       .then(res => res.json())
-      .then(res => {
-        (res.results, setTotalMovie(res.total_results))
-      })
+      .then(res => res)
       .catch(onErrorNetwork)
   }
 
-  const nextPage = (pageNumber, query) => {
+  const onChange = async (pageNumber, query) => {
     const searchString = `https://api.themoviedb.org/3/search/movie?api_key=${KEY_API}&query=${query}&page=${pageNumber}`;
-    fetch(searchString)
+    return await fetch(searchString)
       .then(res => res.json())
       .then(data => {
         setMovies(data.results)
@@ -73,8 +73,8 @@ export default function App() {
     <div className="wrapper">
       <header>
         <Input type='text' className="search-input" onChange={(e) => setQuery(e.target.value)}/>
-        {loading && <Spin size="large" className="loading" />}
-        {error && 
+        { loading && <Spin size="large" className="loading" />}
+        { error && 
           <Alert className="error" message="Error! Поиск не дал результатов." 
           type="error" showIcon closable/>}
         {errorNetwork && 
@@ -85,7 +85,10 @@ export default function App() {
         { movies.map(movie => (<Movie key={movie.id} {...movie}/>)) }
       </section>
       <footer>
-        <Pagination className="pagination" size="small" total={50} />
+        { totalMovie > 20 ?
+          <Pagination total={totalMovie - 10} current={currentPage} 
+            onChange={(page) => onChange(page, query)} /> : ""
+        }  
       </footer>  
     </div> 
   )
