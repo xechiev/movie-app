@@ -6,17 +6,157 @@ body {
   font-family: 'Inter', sans-serif;
   background: #e5e5e5;
   width: 1010px;
-  height: 1147px;
+  height: 100%;
   margin: 0 auto;
-  overflow-wrap: break-word;
-  word-wrap: normal;
-  word-break: normal;
 }
 
-.search-input {
-  width: 945px;
-  height: 40px;
-  margin-bottom: 1rem;
-  margin-top: 4.5rem;
-  margin-left: 1rem;
+@media screen and (min-width: 420px) and (max-width: 479px) {
+  body {
+    width: 100%;
+  }
+  .wrapper {
+    width: 100%;
+    flex-direction: column;
+    padding-left: 0rem;
+    flex-wrap: wrap;
+  }
+  header {
+    width: 100%;
+  }
+  .search-input {
+    width: 92.3%;
+    margin: 0px 1rem;
+  }
+  .movie {
+    width: 92%;
+    height: 245px;
+    margin: 10px 16px 20px 16px;
+    display: block;
+  }
+  .poster {
+    width: 13.8%;
+    min-height: 37%;
+    margin: 6px 13px 10px 10px;
+    float: left;
+  }
+  h3 {
+    padding-top: 4px;
+  }
+  .rating {
+    left: 91%;
+    top: 5px;
+  }
+  .info {
+    padding: 0;
+  }
+  .describe {
+    width: 87.3%;
+    height: 21.9%;
+    padding: 0px 10px 10px 10px;
+    margin: 0;
+  }
+  .genre {
+    margin-right: 8px;
+  }
+  .ant-rate {
+    right: 4%;
+    top: 203px;
+  }
+  .error {
+    width: 90%;
+    height: 50px;
+    margin: 25px auto;
+  }
+}
+@media screen and (min-width: 480px) and (max-width: 767px) {
+  body {
+    width: 100%;
+  }
+  .wrapper {
+    width: 100%;
+    flex-direction: column;
+    padding-left: 0.5rem;
+  }
+  header {
+    width: 100%;
+  }
+  .search-input {
+    width: 92.4%;
+  }
+  .movie {
+    width: 92.5%;
+  }
+  .poster {
+    width: 38.1%;
+    min-height: 37%;
+  }
+  .rating {
+    left: 91%;
+    top: 5px;
+  }
+  .genre {
+    margin-right: 8px;
+  }
+  .info {
+    width: 66%;
+  }
+  .describe {
+    width: 88%;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 990px) {
+  body {
+    width: 100%;
+  }
+  .wrapper {
+    width: 100%;
+    padding-left: 0;
+  }
+  .movie {
+    width: 45.5%;
+    display: block;
+  }
+  header {
+    width: 100%;
+  }
+  .search-input {
+    width: 95.1%;
+  }
+  h3 {
+    padding-top: 4px;
+  }
+  .poster {
+    width: 23.5%;
+    min-height: 40%;
+    margin: 6px 13px 10px 10px;
+    float: left;
+  }
+  .rating {
+    left: 90%;
+    top: 5px;
+  }
+  .info {
+    padding: 0;
+  }
+  .describe {
+    width: 87.3%;
+    height: 21.9%;
+    padding: 0px 10px 10px 10px;
+    margin: 0;
+  }
+  .genre {
+    margin-right: 8px;
+  }
+  .ant-rate {
+    right: 4%;
+    top: 88%;
+  }
+  .error {
+    width: 45%;
+    height: 50px;
+    margin: 0 auto;
+  }
+  .tabs {
+    width: 100%;
+  }
 }
