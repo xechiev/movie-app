@@ -71,21 +71,8 @@
               "assert": "either"
           }
       ],
-      // "object-curly-newline": ["error", { "consistent": true }]
-      "object-curly-newline": [
-          "error",
-          {
-              "ObjectExpression": "always",
-              "ObjectPattern": {
-                  "multiline": true
-              },
-              "ImportDeclaration": "never",
-              "ExportDeclaration": {
-                  "multiline": true,
-                  "minProperties": 3
-              }
-          }
-      ]   
+      "object-curly-newline": ["error", { "consistent": true }],
+      "operator-linebreak": ["error", "after"]  
   },
   "settings": {
       "react": {

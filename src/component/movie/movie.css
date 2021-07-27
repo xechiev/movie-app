@@ -1,11 +1,10 @@
 .movie {
   width: 454px;
-  height: 280px;
+  min-height: 100%;
   display: flex;
   position: relative;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  margin: 0.5rem 1rem;
+  margin: 1rem 1rem;
 }
 .poster {
   width: 183px;
@@ -17,12 +16,17 @@
 }
 .info {
   padding: 12px 9px 12px 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-h3 {
+h5 {
+  width: 86%;
   color: #000000;
   font-size: 18px;
-  margin-bottom: 0.1em !important;
+  line-height: 20px;
+  flex: 0 0 auto;
 }
 .rating {
   display: flex;
@@ -75,16 +79,16 @@ h3 {
 }
 .describe {
   width: 228px;
-  height: 129px;
+  height: auto;
   font-size: 12px;
-  line-height: 22px;
-  overflow: hidden;
+  line-height: 20px;
   padding-right: 20px;
-  margin-top: 5px;
+  margin-top: 10px;
+  flex: 1 0 auto;
 }
 .ant-rate {
-  position: absolute;
-  top: 87%;
+  justify-content: flex-end;
+  flex: 0 0 auto;
 }
 .ant-rate-star {
   width: 16px;

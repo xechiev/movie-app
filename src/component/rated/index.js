@@ -1,3 +1,3 @@
-import Rated from './Rated'
+import Rated from './Rated';
 
-export default Rated
+export default Rated;

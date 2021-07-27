@@ -11,5 +11,5 @@ export default function ColorRating(number) {
     raiting.push('cirrcleColor4');
   }
 
-  return raiting
+  return raiting;
 }

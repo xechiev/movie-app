@@ -17,19 +17,19 @@ export default function Rated({ backdrop_path, genre_ids, title, overview, vote_
   const { genresList } = useContext(Context);
 
   return (
-    <div className="movie">
+    <li className="movie">
       <img className="poster" src={backdrop_path ? SEARCH_IMG + backdrop_path : (backdrop_path = PosterDefault)} alt={title} />
       <div className="info">
-        <h3>{Minify(title, 15)}</h3>
+        <h5>{title}</h5>
         <span className={ColorRating(vote_average).join(' ')}>
           <p className="ratingNumber">{vote_average}</p>
         </span>
         <p className="releaseData">{format(new Date(release_date), 'PP')}</p>
-        {SearchGenreMovie(genre_ids, genresList)}
+        <div>{SearchGenreMovie(genre_ids, genresList)}</div>
         <p className="describe">{Minify(overview, 200)}</p>
         <Rate count={10} disabled defaultValue={rating} />
       </div>
-    </div>
+    </li>
   );
 }
 Rated.defaultProps = {

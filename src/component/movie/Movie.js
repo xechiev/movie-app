@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Rate } from 'antd';
 import { format } from 'date-fns';
@@ -15,7 +15,7 @@ import ColorRating from '../support-func/raiting-color';
 import 'antd/dist/antd.css';
 import './movie.css';
 
-export default function Movie({ id, backdrop_path, genre_ids, title, overview, vote_average, release_date }) {
+export default function Movie({ id, backdrop_path, genre_ids, title, overview, vote_average, release_date, rating }) {
   const { genresList, guestID, getRatedMovie } = useContext(Context);
 
   if (!release_date) {
@@ -33,24 +33,23 @@ export default function Movie({ id, backdrop_path, genre_ids, title, overview, v
         'Content-Type': 'application/json',
       },
     });
-
-    getRatedMovie(guestID, KEY_API)
+    getRatedMovie(guestID, KEY_API);
   };
 
   return (
-    <div className="movie">
+    <li className="movie">
       <img className="poster" src={backdrop_path ? SEARCH_IMG + backdrop_path : (backdrop_path = PosterDefault)} alt={title} />
       <div className="info">
-        <h3>{Minify(title, 18)}</h3>
+        <h5>{title}</h5>
         <span className={ColorRating(vote_average).join(' ')}>
           <p className="ratingNumber">{vote_average}</p>
         </span>
         <p className="releaseData">{format(new Date(release_date), 'PP')}</p>
-        {SearchGenreMovie(genre_ids, genresList)}
-        <p className="describe">{Minify(overview, 200)}</p>
-        <Rate count={10} onChange={(number) => selectStar(number, id, KEY_API, guestID)} />
+        <div>{SearchGenreMovie(genre_ids, genresList)}</div>
+        <p className="describe">{Minify(overview, 235)}</p>
+        <Rate count={10} defaultValue={rating} onChange={(number) => selectStar(number, id, KEY_API, guestID)} />
       </div>
-    </div>
+    </li>
   );
 }
 
@@ -68,4 +67,26 @@ Movie.propTypes = {
   vote_average: PropTypes.number.isRequired,
   release_date: PropTypes.string,
   genre_ids: PropTypes.arrayOf(PropTypes.number),
+  rating: PropTypes.number.isRequired,
 };
+
+// setLoading(true);
+// searchMovie(searchDebounce).then((results) => {
+//   // setTotalMovie(data.total_results);
+//   if (results.length) {
+//     setLoading(false);
+//     setErrorNetwork(false);
+//     setMovies(results);
+//     setCurrentPage(1);
+//     setError(false);
+//     setPagin(true);
+//   } else {
+//     onError();
+//     setMovies([]);
+//   }
+// });
+// } else {
+// setMovies([]);
+// setError(false);
+// setQuery(query);
+// }

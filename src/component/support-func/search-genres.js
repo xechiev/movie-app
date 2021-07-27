@@ -18,4 +18,4 @@ const SearchGenreMovie = (genre_id, genreses) => {
   return result;
 };
 
-export default SearchGenreMovie
+export default SearchGenreMovie;
