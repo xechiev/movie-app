@@ -24,6 +24,7 @@
       "react"
   ],
   "rules": {
+      "no-console":0,
       "no-shadow": ["error", { "allow": ["done"]}],
       "object-shorthand": ["error", "always"],
       "max-len": ["error", { "code": 150 }],

@@ -140,6 +140,7 @@ export default function App() {
       }; 
       getRatedMovie(guestID, KEY_API);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
   
   return (
