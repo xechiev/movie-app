@@ -27,19 +27,22 @@ body {
     width: 92.3%;
     margin: 0px 1rem;
   }
-  .movie {
+  .movie-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .movies {
     width: 92%;
-    height: 245px;
+    min-height: auto;
     margin: 10px 16px 20px 16px;
-    display: block;
   }
   .poster {
-    width: 13.8%;
-    min-height: 37%;
+    width: 60px;
+    height: 91px;
     margin: 6px 13px 10px 10px;
-    float: left;
+    display: block;
   }
-  h3 {
+  h5 {
     padding-top: 4px;
   }
   .rating {
@@ -49,18 +52,21 @@ body {
   .info {
     padding: 0;
   }
+
   .describe {
-    width: 87.3%;
+    display: block;
+    width: 120%;
     height: 21.9%;
-    padding: 0px 10px 10px 10px;
-    margin: 0;
+    padding: 0px 10px 10px 0px;
+    margin-left: -75px;
+    margin-top: 20px;
   }
   .genre {
     margin-right: 8px;
   }
   .ant-rate {
-    right: 4%;
-    top: 203px;
+    margin-left: 60px;
+    margin-bottom: 10px;
   }
   .error {
     width: 90%;
@@ -68,6 +74,7 @@ body {
     margin: 25px auto;
   }
 }
+
 @media screen and (min-width: 480px) and (max-width: 767px) {
   body {
     width: 100%;
@@ -84,7 +91,7 @@ body {
     width: 92.4%;
   }
   .movie {
-    width: 92.5%;
+    width: 98%;
   }
   .poster {
     width: 38.1%;
@@ -104,6 +111,7 @@ body {
     width: 88%;
   }
 }
+
 @media screen and (min-width: 768px) and (max-width: 990px) {
   body {
     width: 100%;
@@ -112,9 +120,8 @@ body {
     width: 100%;
     padding-left: 0;
   }
-  .movie {
+  .movies {
     width: 45.5%;
-    display: block;
   }
   header {
     width: 100%;
@@ -122,14 +129,13 @@ body {
   .search-input {
     width: 95.1%;
   }
-  h3 {
+  h5 {
     padding-top: 4px;
   }
   .poster {
-    width: 23.5%;
-    min-height: 40%;
-    margin: 6px 13px 10px 10px;
-    float: left;
+    max-width: 20%;
+    height: 30%;
+    margin: 6px 13px 20px 10px;
   }
   .rating {
     left: 90%;
@@ -139,17 +145,18 @@ body {
     padding: 0;
   }
   .describe {
-    width: 87.3%;
-    height: 21.9%;
-    padding: 0px 10px 10px 10px;
-    margin: 0;
+    display: inline-block;
+    margin-left: -83px;
+    width: 125%;
+    height: auto;
+    padding: 10px 10px 10px 0px;
   }
   .genre {
     margin-right: 8px;
   }
   .ant-rate {
-    right: 4%;
-    top: 88%;
+    margin-left: 2%;
+    margin-bottom: 5px;
   }
   .error {
     width: 45%;

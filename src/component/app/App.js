@@ -4,22 +4,22 @@
 import React, { useEffect, useState } from 'react';
 import { Spin, Tabs, BackTop } from 'antd';
 import InputSearch from '../input';
-import DOMEN from '../api/domen';
-import KEY_API from '../api/key-api';
-import useDebounce from '../hooks/useDebounce';
-import Context from '../hooks/context';
-import Movie from '../movie/Movie';
-import Pagin from '../support-func/pagination';
-import Rated from '../rated';
-import ErrorNetwork from '../support-func/error-warning';
-import ErrorNoResult from '../support-func/error-no-result';
-import NoRatedMovies from '../support-func/alert';
+import KEY_API from '../../api/key-api';
+import useDebounce from '../../hooks/useDebounce';
+import Context from '../../hooks/context';
+import MovieList from '../movie-list/MovieList';
+import Pagin from '../Pagin';
+import ErrorNetwork from '../ErrorNetwork';
+import ErrorNoResult from '../ErrorNoResult';
+import NoRatedMovies from '../NoRatedMovies';
 
 import 'antd/dist/antd.css';
 import './app.css';
 
+const DOMAIN = 'https://api.themoviedb.org/3/';
+
 export default function App() {
-  const [query, setQuery] = useState('return'); // запрос input
+  const [query, setQuery] = useState('naruto'); // запрос input
   const [movies, setMovies] = useState([]); // массив фильмов
   const [ratedMovies, setRatedMovies] = useState([]); // массив оцененных фильмов
   const [loading, setLoading] = useState(false); // спиннер
@@ -33,13 +33,13 @@ export default function App() {
   const [genresList, setGenresList] = useState([]); // массив жанров
   const [guestID, setGuestID] = useState(null); // гостевой индетификатор(id)
   const [pagin, setPagin] = useState(true); // показатель пагинатора (boolean)
-
+  const [tab, setTab] = useState('1'); // показатель активного таба
   const { TabPane } = Tabs;
 
   const searchDebounce = useDebounce(query.trim(), 650); // ф-я debounce
 
   useEffect(() => {
-    fetch(`${DOMEN}/genre/movie/list?api_key=${KEY_API}`).then((res) => {
+    fetch(`${DOMAIN}genre/movie/list?api_key=${KEY_API}`).then((res) => {
       if (res.ok) {
         res.json().then((res) => setGenresList(res.genres));
       } else {
@@ -49,7 +49,7 @@ export default function App() {
   }, []); // получение массива жанров
 
   useEffect(() => {
-    fetch(`${DOMEN}/authentication/guest_session/new?api_key=${KEY_API}`).then((res) => {
+    fetch(`${DOMAIN}authentication/guest_session/new?api_key=${KEY_API}`).then((res) => {
       if (res.ok) {
         res.json().then((res) => setGuestID(res.guest_session_id));
       } else {
@@ -73,7 +73,7 @@ export default function App() {
   }; // ф-я ошибки сети
 
   const searchMovie = async (search, page = 1) => {
-    const searchString = `${DOMEN}/search/movie?api_key=${KEY_API}&query=${search}&page=${page}`;
+    const searchString = `${DOMAIN}search/movie?api_key=${KEY_API}&query=${search}&page=${page}`;
     return await fetch(searchString)
     .then((res) => {
       if (res.ok) {
@@ -108,7 +108,7 @@ export default function App() {
   }, [searchDebounce]); // получение массива фильмов и настройка остальных показателей
 
   const onChange = async (pageNumber, query) => {
-    const searchString = `${DOMEN}/search/movie?api_key=${KEY_API}&query=${query}&page=${pageNumber}`;
+    const searchString = `${DOMAIN}search/movie?api_key=${KEY_API}&query=${query}&page=${pageNumber}`;
     return await fetch(searchString)
       .then((res) => res.json())
       .then((data) => {
@@ -117,27 +117,34 @@ export default function App() {
       });
   }; // ф-я пагинации
 
-  const callback = (key) => key;
+  const callback = (key) => {
+    setTab(key);
+  }
 
-  const getRatedMovie = async (guestID, KEY_API, pageNum = 1) => {
-    const ratedMovieURL = `${DOMEN}/guest_session/${guestID}/rated/movies?api_key=${KEY_API}&page=${pageNum}&language=en-US&sort_by=created_at.asc`;
-    await fetch(ratedMovieURL).then((res) => {
-      if (res.ok) {
-        res.json().then((res) => {
-          setRatedMovies(res.results);
-          setTotalRatedMovie(res.total_results);
-          setCurrentRatedPage(pageNum);
-          setHaveRatedMovie(false);
-        });
-      } else {
-        throw new Error(`Возникла ошибка ${res.status}`);
-      }
-    });
-  }; // ф-я получения оцененных фильмов и пагинация
-
+  useEffect(() => {
+    if (tab === '2') {
+      const getRatedMovie = async (guestID, KEY_API, pageNum = 1) => {
+        const e = `https://api.themoviedb.org/3/guest_session/${guestID}/rated/movies?api_key=${KEY_API}&page=${pageNum}&sort_by=created_at.asc`;
+        
+        const response = await fetch(e);
+    
+        if (!response.ok) {
+          throw new Error(`Возникла ошибка ${response.status}`);
+        }
+    
+        const body = await response.json()
+        setRatedMovies(body.results);
+        setTotalRatedMovie(body.total_results);
+        setCurrentRatedPage(body.page);
+        setHaveRatedMovie(false);
+      }; 
+      getRatedMovie(guestID, KEY_API);
+    }
+  }, [tab])
+  
   return (
     <div className="wrapper">
-      <Context.Provider value={{ genresList, guestID, getRatedMovie }}>
+      <Context.Provider value={{ movies, ratedMovies, genresList, guestID }}>
         <Tabs defaultActiveKey="1" onChange={callback} className="tabs" centered>
           <TabPane tab="Search" key="1">
             <header>
@@ -146,30 +153,16 @@ export default function App() {
               {error && ErrorNoResult}
               {errorNetwork && ErrorNetwork}
             </header>
-            <ul>
-              {!errorNetwork &&
-                movies.map((movie) => {
-                  movie.rating = 0;
-                  ratedMovies.map((movie2) => {
-                    if (movie.id === movie2.id) {
-                      movie.rating = movie2.rating;
-                    }
-                    return movie.rating
-                  }) 
-                  return <Movie key={movie.id} {...movie} />;
-                })}
-            </ul>
+            <section>
+              {!errorNetwork && <MovieList arr={movies} />}
+            </section>
             <BackTop />
             <footer>{pagin && Pagin(totalMovie, 1, currentPage, onChange, query)}</footer>
           </TabPane>
           <TabPane tab="Rated" key="2">
             {haveRatedMovie && NoRatedMovies}
-            <ul>
-              {ratedMovies.map((movie) => (
-                <Rated key={movie.id} {...movie} />
-              ))}
-            </ul>
-            <footer>{totalRatedMovie > 20 ? Pagin(totalRatedMovie, 1, currentRatedPage, getRatedMovie, guestID, KEY_API) : ''}</footer>
+            <MovieList arr={ratedMovies} />
+            <footer>{totalRatedMovie > 20 ? Pagin(totalRatedMovie, 1, currentRatedPage, guestID, KEY_API) : ''}</footer>
           </TabPane>
         </Tabs>
       </Context.Provider>

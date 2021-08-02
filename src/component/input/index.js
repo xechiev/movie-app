@@ -1,3 +1,3 @@
-import InputSearch from './input';
+import InputSearch from './InputSearch';
 
 export default InputSearch;

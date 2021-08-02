@@ -18,15 +18,22 @@ header {
   height: 40px;
   margin: 1rem;
 }
-ul {
+
+.movie-list {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
+  list-style: none;
+}
+.movies {
+  margin: 1rem 1rem;
+  display: flex;
 }
 footer {
   display: flex;
   justify-content: center;
   margin: 25px 0;
+  list-style: none;
 }
 .loading {
   position: absolute;

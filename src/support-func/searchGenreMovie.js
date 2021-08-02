@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SearchGenreMovie = (genre_id, genreses) => {
+const searchGenreMovie = (genre_id, genreses) => {
   const result = [];
   for (let i = 0; i < genre_id.length; i++) {
     const element = genre_id[i];
@@ -18,4 +18,4 @@ const SearchGenreMovie = (genre_id, genreses) => {
   return result;
 };
 
-export default SearchGenreMovie;
+export default searchGenreMovie;

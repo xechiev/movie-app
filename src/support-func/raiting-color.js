@@ -1,4 +1,4 @@
-export default function ColorRating(number) {
+export default function colorRating(number) {
   const raiting = ['rating'];
 
   if (number < 3) {

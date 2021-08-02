@@ -1,3 +1,3 @@
-export default function Minify(text, length) {
+export default function minify(text, length) {
   return `${text.slice(0, text.indexOf(' ', length))}...`;
 }
