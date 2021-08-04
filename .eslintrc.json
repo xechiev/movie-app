@@ -24,6 +24,8 @@
       "react"
   ],
   "rules": {
+      "no-return-await": "error",
+      "no-underscore-dangle": 0,
       "no-console":0,
       "no-shadow": ["error", { "allow": ["done"]}],
       "object-shorthand": ["error", "always"],

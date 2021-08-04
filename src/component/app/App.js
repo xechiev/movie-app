@@ -3,20 +3,20 @@
 /* eslint-disable camelcase */
 import React, { useEffect, useState } from 'react';
 import { Spin, Tabs, BackTop } from 'antd';
-import InputSearch from '../input';
-import KEY_API from '../../api/key-api';
+import ApiService from '../../api/ApiService';
+import InputSearch from '../inputSearch';
 import useDebounce from '../../hooks/useDebounce';
 import Context from '../../hooks/context';
-import MovieList from '../movie-list/MovieList';
-import Pagin from '../Pagin';
-import ErrorNetwork from '../ErrorNetwork';
-import ErrorNoResult from '../ErrorNoResult';
-import NoRatedMovies from '../NoRatedMovies';
+import MovieList from '../movie-list';
+import Pagin from '../pagin';
+import ErrorNetwork from '../errorNetwork';
+import ErrorNoResult from '../errorNoResult';
+import NoRatedMovies from '../noRatedMovies';
 
 import 'antd/dist/antd.css';
 import './app.css';
 
-const DOMAIN = 'https://api.themoviedb.org/3/';
+const apiService = new ApiService();
 
 export default function App() {
   const [query, setQuery] = useState('naruto'); // запрос input
@@ -35,29 +35,17 @@ export default function App() {
   const [pagin, setPagin] = useState(true); // показатель пагинатора (boolean)
   const [tab, setTab] = useState('1'); // показатель активного таба
   const { TabPane } = Tabs;
-
-  const searchDebounce = useDebounce(query.trim(), 650); // ф-я debounce
-
-  useEffect(() => {
-    fetch(`${DOMAIN}genre/movie/list?api_key=${KEY_API}`).then((res) => {
-      if (res.ok) {
-        res.json().then((res) => setGenresList(res.genres));
-      } else {
-        throw new Error(`Возникла ошибка ${res.status}`);
-      }
-    });
-  }, []); // получение массива жанров
+  const searchDebounce = useDebounce(query.trim(), 650); // ф-я debounce  
 
   useEffect(() => {
-    fetch(`${DOMAIN}authentication/guest_session/new?api_key=${KEY_API}`).then((res) => {
-      if (res.ok) {
-        res.json().then((res) => setGuestID(res.guest_session_id));
-      } else {
-        throw new Error(`Возникла ошибка ${res.status}`);
-      }
-    });
+    apiService.getGuestId().then((res) => setGuestID(res))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // получение гостевого id
+  }, []);
+
+  useEffect(() => {
+    apiService.getGenreList().then((res) => setGenresList(res))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onError = () => {
     setError(true);
@@ -72,23 +60,10 @@ export default function App() {
     setPagin(false);
   }; // ф-я ошибки сети
 
-  const searchMovie = async (search, page = 1) => {
-    const searchString = `${DOMAIN}search/movie?api_key=${KEY_API}&query=${search}&page=${page}`;
-    return await fetch(searchString)
-    .then((res) => {
-      if (res.ok) {
-        setErrorNetwork(false);
-      }
-     return res.json()
-    })
-    .then((res) => res)
-    .catch(onErrorNetwork)
-  };
-
   useEffect(() => {
     if (searchDebounce) {
       setLoading(true);
-      searchMovie(searchDebounce).then((data) => {
+      apiService.getMovies(searchDebounce).then((data) => {
         setTotalMovie(data.total_results);
         if (data.results.length) {
           setCurrentPage(1);
@@ -99,22 +74,20 @@ export default function App() {
           onError();
           setMovies([]);
         }
-      }).catch((e) => console.error('Ошибка сети', e.message))
+      }).catch(onErrorNetwork)
     } else {
       setError(false);
       setQuery(query);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDebounce]); // получение массива фильмов и настройка остальных показателей
+  }, [searchDebounce])
 
-  const onChange = async (pageNumber, query) => {
-    const searchString = `${DOMAIN}search/movie?api_key=${KEY_API}&query=${query}&page=${pageNumber}`;
-    return await fetch(searchString)
-      .then((res) => res.json())
-      .then((data) => {
-        setMovies(data.results);
-        setCurrentPage(pageNumber);
-      });
+  const onChange = (page, query) => {
+    apiService.getNextPage(page, query)
+    .then((data) => {
+      setMovies(data.results);
+      setCurrentPage(page);
+    })
   }; // ф-я пагинации
 
   const callback = (key) => {
@@ -123,22 +96,13 @@ export default function App() {
 
   useEffect(() => {
     if (tab === '2') {
-      const getRatedMovie = async (guestID, KEY_API, pageNum = 1) => {
-        const e = `https://api.themoviedb.org/3/guest_session/${guestID}/rated/movies?api_key=${KEY_API}&page=${pageNum}&sort_by=created_at.asc`;
-        
-        const response = await fetch(e);
-    
-        if (!response.ok) {
-          throw new Error(`Возникла ошибка ${response.status}`);
-        }
-    
-        const body = await response.json()
-        setRatedMovies(body.results);
-        setTotalRatedMovie(body.total_results);
-        setCurrentRatedPage(body.page);
+      apiService.getRatedMovies(guestID)
+      .then((data) => {
+        setRatedMovies(data.results);
+        setTotalRatedMovie(data.total_results);
+        setCurrentRatedPage(data.page);
         setHaveRatedMovie(false);
-      }; 
-      getRatedMovie(guestID, KEY_API);
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
@@ -163,7 +127,7 @@ export default function App() {
           <TabPane tab="Rated" key="2">
             {haveRatedMovie && NoRatedMovies}
             <MovieList arr={ratedMovies} />
-            <footer>{totalRatedMovie > 20 ? Pagin(totalRatedMovie, 1, currentRatedPage, guestID, KEY_API) : ''}</footer>
+            <footer>{totalRatedMovie > 20 ? Pagin(totalRatedMovie, 1, currentRatedPage, guestID) : ''}</footer>
           </TabPane>
         </Tabs>
       </Context.Provider>
