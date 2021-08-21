@@ -7,7 +7,7 @@ import ApiService from '../../api/ApiService';
 import InputSearch from '../inputSearch';
 import useDebounce from '../../hooks/useDebounce';
 import Context from '../../hooks/context';
-import MovieList from '../movie-list';
+import MovieList from '../movieList';
 import Pagin from '../pagin';
 import ErrorNetwork from '../errorNetwork';
 import ErrorNoResult from '../errorNoResult';
@@ -16,26 +16,23 @@ import NoRatedMovies from '../noRatedMovies';
 import 'antd/dist/antd.css';
 import './app.css';
 
-const apiService = new ApiService();
-
 export default function App() {
-  const [query, setQuery] = useState('naruto'); // запрос input
-  const [movies, setMovies] = useState([]); // массив фильмов
-  const [ratedMovies, setRatedMovies] = useState([]); // массив оцененных фильмов
-  const [loading, setLoading] = useState(false); // спиннер
-  const [error, setError] = useState(false); // ошибка результата поиска
-  const [errorNetwork, setErrorNetwork] = useState(false); // ошибка сети
-  const [totalMovie, setTotalMovie] = useState(0); // количество фильмов в запросе
-  const [totalRatedMovie, setTotalRatedMovie] = useState(0); // количество оцененных фильмов в запросе
-  const [haveRatedMovie, setHaveRatedMovie] = useState(true); // показатель оцененных фильмов(да/нет)
-  const [currentPage, setCurrentPage] = useState(1); // текущая страница основных фильмов
-  const [currentRatedPage, setCurrentRatedPage] = useState(1); // текущая страница оцененных фильмов
-  const [genresList, setGenresList] = useState([]); // массив жанров
-  const [guestID, setGuestID] = useState(null); // гостевой индетификатор(id)
-  const [pagin, setPagin] = useState(true); // показатель пагинатора (boolean)
-  const [tab, setTab] = useState('1'); // показатель активного таба
+  const [query, setQuery] = useState(''); 
+  const [movies, setMovies] = useState([]); 
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(false); 
+  const [errorNetwork, setErrorNetwork] = useState(false); 
+  const [totalMovie, setTotalMovie] = useState(0); 
+  const [haveRatedMovie, setHaveRatedMovie] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [genresList, setGenresList] = useState([]); 
+  const [guestID, setGuestID] = useState(null); 
+  const [pagin, setPagin] = useState(true); 
+  const [ratedMovie, setRatedMovie] = useState([]);
+  const [changePagin, setChangePagin] = useState('');
   const { TabPane } = Tabs;
-  const searchDebounce = useDebounce(query.trim(), 650); // ф-я debounce  
+  const searchDebounce = useDebounce(query.trim(), 650);
+  const apiService = new ApiService();
 
   useEffect(() => {
     apiService.getGuestId().then((res) => setGuestID(res))
@@ -51,19 +48,30 @@ export default function App() {
     setError(true);
     setLoading(false);
     setPagin(false);
-  }; // ф-я ошибки поиска
+  }; 
 
   const onErrorNetwork = () => {
     setErrorNetwork(true);
     setLoading(false);
     setError(false);
     setPagin(false);
-  }; // ф-я ошибки сети
+  }; 
+
+  useEffect(() => {
+    apiService.getPopularMovies().then((data) => {
+      setChangePagin(1)
+      setTotalMovie(data.total_results);
+      setMovies(data.results);
+      setCurrentPage(1);
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (searchDebounce) {
       setLoading(true);
       apiService.getMovies(searchDebounce).then((data) => {
+        setChangePagin(2)
         setTotalMovie(data.total_results);
         if (data.results.length) {
           setCurrentPage(1);
@@ -79,38 +87,61 @@ export default function App() {
       setError(false);
       setQuery(query);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchDebounce])
 
-  const onChange = (page, query) => {
-    apiService.getNextPage(page, query)
-    .then((data) => {
-      setMovies(data.results);
-      setCurrentPage(page);
-    })
-  }; // ф-я пагинации
-
-  const callback = (key) => {
-    setTab(key);
-  }
-
-  useEffect(() => {
-    if (tab === '2') {
-      apiService.getRatedMovies(guestID)
-      .then((data) => {
-        setRatedMovies(data.results);
-        setTotalRatedMovie(data.total_results);
-        setCurrentRatedPage(data.page);
-        setHaveRatedMovie(false);
+  const switchTabs = (key) => {
+    if (key === '2') {
+      apiService.getRatedMovies(guestID).then((data) => {
+        setChangePagin(3)
+        setCurrentPage(1);
+        setMovies(data.results);
+        setTotalMovie(data.total_results);
+      })
+    } else {
+      apiService.getPopularMovies().then((data) => {
+        setChangePagin(1)
+        setTotalMovie(data.total_results);
+        setMovies(data.results);
+        setCurrentPage(1);
       })
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab])
-  
+  }
+
+  const movieRatingSaved = (item) => {
+    const stateRatedMovie = ratedMovie.slice(0);
+    stateRatedMovie.push(item);
+    setRatedMovie(stateRatedMovie);
+  }
+
+  const onChange = (page, query) => {
+    if (changePagin === 1) {
+      apiService.getPopularMovies(page)
+      .then((data) => {
+        setMovies(data.results);
+        setCurrentPage(page);
+      });
+    }
+    if (changePagin === 2) {
+      apiService.getNextPage(page, query)
+      .then((data) => {
+        setMovies(data.results);
+        setCurrentPage(page);
+      });
+    }
+    if (changePagin === 3) {
+      apiService.getRatedMovies(guestID, page)
+      .then((data) => {
+        setMovies(data.results);
+        setCurrentPage(page);
+      });
+    }
+  }; 
+
   return (
     <div className="wrapper">
-      <Context.Provider value={{ movies, ratedMovies, genresList, guestID }}>
-        <Tabs defaultActiveKey="1" onChange={callback} className="tabs" centered>
+      <Context.Provider value={{ movies, genresList, guestID, setHaveRatedMovie, movieRatingSaved }}>
+        <Tabs defaultActiveKey="1" onChange={switchTabs} className="tabs" centered>
           <TabPane tab="Search" key="1">
             <header>
               {InputSearch(setQuery)}
@@ -119,15 +150,16 @@ export default function App() {
               {errorNetwork && ErrorNetwork}
             </header>
             <section>
-              {!errorNetwork && <MovieList arr={movies} />}
+              {!errorNetwork && <MovieList arr={movies} ratedMovie={ratedMovie} />}
             </section>
             <BackTop />
             <footer>{pagin && Pagin(totalMovie, 1, currentPage, onChange, query)}</footer>
           </TabPane>
           <TabPane tab="Rated" key="2">
             {haveRatedMovie && NoRatedMovies}
-            <MovieList arr={ratedMovies} />
-            <footer>{totalRatedMovie > 20 ? Pagin(totalRatedMovie, 1, currentRatedPage, guestID) : ''}</footer>
+            {errorNetwork && ErrorNetwork}
+            <MovieList arr={movies} />
+            <footer>{totalMovie > 20 ? Pagin(totalMovie, 1, currentPage, onChange) : ''}</footer>
           </TabPane>
         </Tabs>
       </Context.Provider>

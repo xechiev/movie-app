@@ -13,7 +13,7 @@ export default class ApiService {
     if (!res.ok) {
       throw new Error(`Возникла ошибка ${res.status}`);
     }
-// eslint-disable-next-line no-return-await
+    // eslint-disable-next-line no-return-await
     return await res.json();
   }
 
@@ -29,7 +29,12 @@ export default class ApiService {
     return req
   }
 
-  async getMovies(query = 'naruto', page = 1) {
+  async getPopularMovies(page = 1) {
+    const res = await this.getResourse(`movie/popular?api_key=${this._key}&language=en-US&page=${page}`);
+    return res;
+  }
+
+  async getMovies(query, page = 1) {
     const res = await this.getResourse(`search/movie?api_key=${this._key}&query=${query}&page=${page}`);
     return res;
   }

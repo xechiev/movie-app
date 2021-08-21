@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pagination } from 'antd';
 
-export default function Pagin(total, num, current, func, value, id, ip) {
+export default function Pagin(total, num, current, func, value) {
   return (
     <Pagination
       total={total - 10} 

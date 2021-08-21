@@ -73,6 +73,9 @@ body {
     height: 50px;
     margin: 25px auto;
   }
+  .ratedError {
+    width: 90%;
+  }
 }
 
 @media screen and (min-width: 480px) and (max-width: 767px) {
@@ -146,8 +149,9 @@ body {
   }
   .describe {
     display: inline-block;
-    margin-left: -83px;
-    width: 125%;
+    margin: 0;
+    margin-left: -4.2rem;
+    width: 110%;
     height: auto;
     padding: 10px 10px 10px 0px;
   }
@@ -157,11 +161,6 @@ body {
   .ant-rate {
     margin-left: 2%;
     margin-bottom: 5px;
-  }
-  .error {
-    width: 45%;
-    height: 50px;
-    margin: 0 auto;
   }
   .tabs {
     width: 100%;

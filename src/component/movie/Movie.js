@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { format } from 'date-fns';
 import { Rate } from 'antd';
 import PropTypes from 'prop-types';
@@ -12,19 +12,22 @@ import colorRating from '../../support-func/raiting-color';
 import 'antd/dist/antd.css';
 import './movie.css';
 
-const apiService = new ApiService();
-
 export default function Movie({ id, poster_path, genre_ids, title, overview, vote_average, release_date, rating }) {
-  const { genresList, guestID } = useContext(Context);
+  const { genresList, guestID, setHaveRatedMovie, movieRatingSaved } = useContext(Context);
+  const [valueDefault, setValueDefault] = useState(rating)
+  const apiService = new ApiService();
 
   if (!release_date) {
     release_date = null;
   }
-
-  const selectStar = async (number, movie_id) => {
+  
+  const selectStar = (number, movie_id) => {
+    setValueDefault(number)
+    movieRatingSaved({ rating: number, id: movie_id })
     apiService.postStars(number, movie_id, guestID);
+    setHaveRatedMovie(false);
   };
-
+  
   return (
     <div className="movie">
       <img className="poster" src={apiService.getDefaultPoster(poster_path)} alt={title} />
@@ -36,7 +39,12 @@ export default function Movie({ id, poster_path, genre_ids, title, overview, vot
         <p className="releaseData">{format(new Date(release_date), 'PP')}</p>
         <div>{searchGenreMovie(genre_ids, genresList)}</div>
         <p className="describe">{minify(overview, 235)}</p>
-        <Rate count={10} defaultValue={rating} onChange={(number) => selectStar(number, id, guestID)} />
+        <Rate 
+          count={10} 
+          value={rating} 
+          onChange={(number) => selectStar(number, id, guestID)} 
+          defaultValue={valueDefault}
+        />
       </div>
     </div>
   );
@@ -45,8 +53,8 @@ export default function Movie({ id, poster_path, genre_ids, title, overview, vot
 Movie.defaultProps = {
   release_date: '1992-03-08',
   genre_ids: '',
-  rating: 0,
   poster_path: '',
+  rating: 0,
 };
 
 Movie.propTypes = {

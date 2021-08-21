@@ -24,6 +24,7 @@
       "react"
   ],
   "rules": {
+      "no-confusing-arrow": 0,
       "no-return-await": "error",
       "no-underscore-dangle": 0,
       "no-console":0,
