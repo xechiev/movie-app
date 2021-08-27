@@ -1,2 +1,2 @@
 Movie application
-https://vercel.com/xechiev/movie-app
+https://movie-app-sable.vercel.app/
