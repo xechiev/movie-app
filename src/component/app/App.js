@@ -29,7 +29,6 @@ export default function App() {
   const [guestID, setGuestID] = useState(null); 
   const [pagin, setPagin] = useState(true); 
   const [ratedMovie, setRatedMovie] = useState([]);
-  const [changePagin, setChangePagin] = useState('');
   const { TabPane } = Tabs;
   const searchDebounce = useDebounce(query.trim(), 650);
   const apiService = new ApiService();
@@ -58,23 +57,20 @@ export default function App() {
   }; 
 
   useEffect(() => {
-    apiService.getPopularMovies().then((data) => {
-      setChangePagin(1)
+    apiService.getPopularMovies(currentPage).then((data) => {
       setTotalMovie(data.total_results);
       setMovies(data.results);
-      setCurrentPage(1);
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [currentPage])
 
   useEffect(() => {
     if (searchDebounce) {
+      setErrorNetwork(false);
       setLoading(true);
-      apiService.getMovies(searchDebounce).then((data) => {
-        setChangePagin(2)
+      apiService.getMovies(searchDebounce, currentPage).then((data) => {
         setTotalMovie(data.total_results);
         if (data.results.length) {
-          setCurrentPage(1);
           setLoading(false);
           setError(false);
           setMovies(data.results);
@@ -88,24 +84,22 @@ export default function App() {
       setQuery(query);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDebounce])
+  }, [searchDebounce, currentPage])
 
   const switchTabs = (key) => {
-    if (key === '2') {
-      apiService.getRatedMovies(guestID).then((data) => {
-        setChangePagin(3)
-        setCurrentPage(1);
-        setMovies(data.results);
-        setTotalMovie(data.total_results);
-      })
-    } else {
-      apiService.getPopularMovies().then((data) => {
-        setChangePagin(1)
-        setTotalMovie(data.total_results);
-        setMovies(data.results);
-        setCurrentPage(1);
-      })
-    }
+      if (key === '2') {
+        apiService.getRatedMovies(guestID).then((data) => {
+          setCurrentPage(1);
+          setMovies(data.results);
+          setTotalMovie(data.total_results);
+        })
+      } else {
+        apiService.getPopularMovies().then((data) => {
+          setTotalMovie(data.total_results);
+          setMovies(data.results);
+          setCurrentPage(1);
+        })
+      }
   }
 
   const movieRatingSaved = (item) => {
@@ -114,28 +108,8 @@ export default function App() {
     setRatedMovie(stateRatedMovie);
   }
 
-  const onChange = (page, query) => {
-    if (changePagin === 1) {
-      apiService.getPopularMovies(page)
-      .then((data) => {
-        setMovies(data.results);
-        setCurrentPage(page);
-      });
-    }
-    if (changePagin === 2) {
-      apiService.getNextPage(page, query)
-      .then((data) => {
-        setMovies(data.results);
-        setCurrentPage(page);
-      });
-    }
-    if (changePagin === 3) {
-      apiService.getRatedMovies(guestID, page)
-      .then((data) => {
-        setMovies(data.results);
-        setCurrentPage(page);
-      });
-    }
+  const onChange = (page) => {
+    setCurrentPage(page);
   }; 
 
   return (
@@ -144,7 +118,7 @@ export default function App() {
         <Tabs defaultActiveKey="1" onChange={switchTabs} className="tabs" centered>
           <TabPane tab="Search" key="1">
             <header>
-              {InputSearch(setQuery)}
+              {InputSearch(setQuery, setCurrentPage)}
               {loading && <Spin size="large" className="loading" />}
               {error && ErrorNoResult}
               {errorNetwork && ErrorNetwork}
@@ -153,7 +127,7 @@ export default function App() {
               {!errorNetwork && <MovieList arr={movies} ratedMovie={ratedMovie} />}
             </section>
             <BackTop />
-            <footer>{pagin && Pagin(totalMovie, 1, currentPage, onChange, query)}</footer>
+            <footer>{pagin && Pagin(totalMovie, 1, currentPage, onChange)}</footer>
           </TabPane>
           <TabPane tab="Rated" key="2">
             {haveRatedMovie && NoRatedMovies}
