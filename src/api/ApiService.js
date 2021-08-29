@@ -26,7 +26,7 @@ export default class ApiService {
   async getGenreList() {
     const res = await this.getResourse(`genre/movie/list?api_key=${this._key}`);
     const req = await res.genres;
-    return req
+    return req;
   }
 
   async getPopularMovies(page = 1) {
@@ -50,13 +50,12 @@ export default class ApiService {
   }
 
   getDefaultPoster(poster) {
-    return poster ? this._img + poster : (poster = this._posterDefault); 
+    return poster ? this._img + poster : (poster = this._posterDefault);
   }
 
   async postStars(number, movie_id, guestID) {
     const value = number;
-    const res = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}/rating?api_key=${this._key}&guest_session_id=${guestID}`, 
-    {
+    const res = await fetch(`https://api.themoviedb.org/3/movie/${movie_id}/rating?api_key=${this._key}&guest_session_id=${guestID}`, {
       method: 'POST',
       body: JSON.stringify({
         value,

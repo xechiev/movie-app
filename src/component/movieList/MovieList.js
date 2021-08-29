@@ -7,28 +7,31 @@ export default function MovieList({ arr, ratedMovie }) {
     if (ratedMovie) {
       ratedMovie.map((movie2) => {
         const movie1 = movie;
-          if (movie1.id === movie2.id) {
-            movie1.rating = movie2.rating
-          }
-          return movie1.rating
-      })
-      return <li key={movie.id} className="movies"><Movie {...movie} /></li>
+        if (movie1.id === movie2.id) {
+          movie1.rating = movie2.rating;
+        }
+        return movie1.rating;
+      });
+      return (
+        <li key={movie.id} className="movies">
+          <Movie {...movie} />
+        </li>
+      );
     }
-     return <li key={movie.id} className="movies"><Movie {...movie} /></li>
-  })
+    return (
+      <li key={movie.id} className="movies">
+        <Movie {...movie} />
+      </li>
+    );
+  });
 
-  return (
-    <ul className="movie-list">
-      {elements}
-    </ul>
-  )
+  return <ul className="movie-list">{elements}</ul>;
 }
 MovieList.defaultProps = {
   ratedMovie: undefined,
-}
+};
 
 MovieList.propTypes = {
   arr: PropTypes.arrayOf(PropTypes.object).isRequired,
   ratedMovie: PropTypes.arrayOf(PropTypes.object),
-}
-
+};

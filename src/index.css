@@ -20,9 +20,6 @@ body {
     padding-left: 0rem;
     flex-wrap: wrap;
   }
-  header {
-    width: 100%;
-  }
   .search-input {
     width: 92.3%;
     margin: 0px 1rem;
@@ -32,9 +29,11 @@ body {
     flex-direction: column;
   }
   .movies {
-    width: 92%;
     min-height: auto;
     margin: 10px 16px 20px 16px;
+  }
+  .movie {
+    width: 100%;
   }
   .poster {
     width: 60px;
@@ -76,6 +75,9 @@ body {
   .ratedError {
     width: 90%;
   }
+  .pagination {
+    transform: translateX(12%);
+  }
 }
 
 @media screen and (min-width: 480px) and (max-width: 767px) {
@@ -86,9 +88,6 @@ body {
     width: 100%;
     flex-direction: column;
     padding-left: 0.5rem;
-  }
-  header {
-    width: 100%;
   }
   .search-input {
     width: 92.4%;
@@ -113,6 +112,9 @@ body {
   .describe {
     width: 88%;
   }
+  .pagination {
+    transform: translateX(15.5%);
+  }
 }
 
 @media screen and (min-width: 768px) and (max-width: 990px) {
@@ -125,9 +127,6 @@ body {
   }
   .movies {
     width: 45.5%;
-  }
-  header {
-    width: 100%;
   }
   .search-input {
     width: 95.1%;
@@ -164,5 +163,8 @@ body {
   }
   .tabs {
     width: 100%;
+  }
+  .pagination {
+    transform: translateX(41%);
   }
 }
