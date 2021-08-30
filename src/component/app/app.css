@@ -46,10 +46,10 @@ header {
 
 footer {
   margin: 20px 0;
+  display: inline-block;
+  text-align: center;
 }
-.pagination {
-  transform: translateX(27%);
-}
+
 .error {
   width: 41%;
   height: 50px;
