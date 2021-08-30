@@ -58,14 +58,21 @@ export default function App() {
   };
 
   useEffect(() => {
-    apiService.getPopularMovies(currentPage).then((data) => {
-      setTotalMovie(data.total_results);
-      setMovies(data.results);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+    if (!tabValue) {
+      setTabValue(false);
+      apiService.getRatedMovies(guestID, currentPage).then((data) => {
+        setMovies(data.results);
+        setTotalMovie(data.total_results);
+      });
+    }
 
-  useEffect(() => {
+    if (tabValue) {
+      apiService.getPopularMovies(currentPage).then((data) => {
+        setTotalMovie(data.total_results);
+        setMovies(data.results);
+        setError(false);
+      });
+
     if (searchDebounce) {
       setErrorNetwork(false);
       setLoading(true);
@@ -87,26 +94,17 @@ export default function App() {
       setError(false);
       setQuery(query);
     }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDebounce, currentPage]);
+  }, [searchDebounce, currentPage, tabValue]);
 
   const switchTabs = (key) => {
     if (key === '2') {
-      setError(false)
-      setTabValue(false)
-      apiService.getRatedMovies(guestID, currentPage).then((data) => {
-        setCurrentPage(1);
-        setMovies(data.results);
-        setTotalMovie(data.total_results);
-      })
-    } 
+      setTabValue(false);
+      setError(false);
+    }
     if (key === '1') {
-      setTabValue(true)
-      apiService.getPopularMovies().then((data) => {
-        setTotalMovie(data.total_results);
-        setMovies(data.results);
-        setCurrentPage(1);
-      })
+      setTabValue(true);     
     }
   };
 
@@ -124,20 +122,20 @@ export default function App() {
     <div className="wrapper">
       <Context.Provider value={{ movies, genresList, guestID, setHaveRatedMovie, movieRatingSaved }}>
         <Tabs defaultActiveKey="1" onChange={switchTabs} className="tabs" centered>
-          <TabPane tab="Search" key="1" /> 
-          <TabPane tab="Rated" key="2" /> 
+          <TabPane tab="Search" key="1" />
+          <TabPane tab="Rated" key="2" />
         </Tabs>
         {tabValue ? InputSearch(setQuery, setCurrentPage) : ''}
-        {!tabValue && (haveRatedMovie && NoRatedMovies)}
+        {!tabValue && haveRatedMovie && NoRatedMovies}
         {loading && <Spin size="large" className="loading" />}
-        {tabValue && (error && ErrorNoResult)}
+        {error && ErrorNoResult}
         {errorNetwork && ErrorNetwork}
         <section>
           {!errorNetwork && <MovieList arr={movies} ratedMovie={ratedMovie} />}
           <BackTop />
         </section>
         <footer>
-          {tabValue ? (pagin && Pagin(totalMovie, 1, currentPage, onChange, query)) : (totalMovie > 20 && Pagin(totalMovie, 1, currentPage, onChange))}
+          {tabValue ? pagin && Pagin(totalMovie, 1, currentPage, onChange, query) : totalMovie > 20 && Pagin(totalMovie, 1, currentPage, onChange)}
         </footer>
       </Context.Provider>
     </div>
