@@ -104,6 +104,7 @@ export default function App() {
     if (key === '2') {
       setTabValue(false);
       setError(false);
+      setCurrentPage(1)
     }
     if (key === '1') {
       setTabValue(true);     
