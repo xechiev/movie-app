@@ -72,7 +72,10 @@ export default function App() {
         setMovies(data.results);
         setError(false);
       });
+    }
+  }, [tabValue, currentPage])
 
+  useEffect(() => {
     if (searchDebounce) {
       setErrorNetwork(false);
       setLoading(true);
@@ -94,9 +97,8 @@ export default function App() {
       setError(false);
       setQuery(query);
     }
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDebounce, currentPage, tabValue]);
+  }, [searchDebounce, currentPage]);
 
   const switchTabs = (key) => {
     if (key === '2') {
